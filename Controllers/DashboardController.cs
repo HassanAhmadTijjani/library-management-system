@@ -12,7 +12,6 @@ namespace LibraryManagement.Controllers
            _context = context;
         }
         // GET: DashboardController
-// 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
         public async Task<IActionResult> Index()
         {
             var totalBooks = await _context.Books.CountAsync();
