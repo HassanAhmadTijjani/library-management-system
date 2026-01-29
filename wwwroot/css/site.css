@@ -1,0 +1,93 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+
+/*  */
+
+    /* kard Hover Effects */
+     .kard 
+     { transition: box-shadow 0.3s ease; }
+    /*{
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    } */
+    
+    .kard:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    /* {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    } */
+    
+    /* Colored kard Backgrounds with Hover */
+    .kard-primary {
+        background: linear-gradient(135deg, #8599f5 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .kard-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .kard-success {
+        background: linear-gradient(135deg, #93fbb0 0%, #028c27 100%);
+        color: white;
+    }
+    
+    .kard-success:hover {
+        background: linear-gradient(135deg, #028c27 0%, #93fbb0 100%);
+    }
+    
+    .kard-danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+    
+    .kard-danger:hover {
+        background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+    }
+    
+    .kard-info {
+        background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        color: white;
+    }
+    
+    .kard-info:hover {
+        background: linear-gradient(135deg, #330867 0%, #30cfd0 100%);
+    }
+    
+    .kard-warning {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        color: #333;
+    }
+    
+    .kard-warning:hover {
+        background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    }
+    
+    .kard-secondary {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #333;
+    }
+    
+    .kard-secondary:hover {
+        background: linear-gradient(135deg, #fed6e3 0%, #a8edea 100%);
+    }

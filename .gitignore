@@ -1,0 +1,22 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+.vs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Package files
+*.nupkg
+packages/

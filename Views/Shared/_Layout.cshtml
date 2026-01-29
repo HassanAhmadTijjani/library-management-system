@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LibraryManagement</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/LibraryManagement.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
+            <div class="container-fluid">
+                <!-- Brand/Logo -->
+                <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
+                    <i class="bi bi-book"></i> HAT Book Store
+                </a>
+
+                <!-- Toggle for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Menu Items -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+
+                        <!-- Books Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-book"></i> Books
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Books" asp-action="Index">All Books</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-controller="Books" asp-action="Create">Add New Book</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Members Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-people"></i> Members
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Members" asp-action="Index">All Members</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-controller="Members" asp-action="Create">Add New
+                                        Member</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Borrow Records -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BorrowRecords" asp-action="Index">
+                                <i class="bi bi-arrow-left-right"></i> Borrow Records
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted bg-dark py-3 text-white">
+
+        <div class="container text-white">
+            &copy; @DateTime.Now.Year - HAT Book Store - <a asp-area="" asp-controller="Home"
+                asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        @if (TempData["success"] != null)
+            {
+                <text>
+                    toastr.success('@TempData["success"]');
+                </text>
+        }
+            @if (TempData["error"] != null)
+            {
+                <text>
+                    toastr.error('@TempData["error"]');
+                </text>
+        }
+            @if (TempData["warning"] != null)
+            {
+                <text>
+                    toastr.warning('@TempData["warning"]');
+                </text>
+        }
+            @if (TempData["info"] != null)
+            {
+                <text>
+                    toastr.info('@TempData["info"]');
+                </text>
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

@@ -19,6 +19,7 @@ A full-stack web application for managing library operations built with ASP.NET 
 - C#
 
 ## 🚀 Getting Started
+
 ```bash
 # Clone the repository
 git clone https://github.com/HassanAhmadTijjani/library-management-system.git
@@ -43,6 +44,7 @@ Visit `https://localhost:5039` in your browser.
 ## 👨‍💻 Author
 
 **Hassan Ahmad Tijjani**
+
 - GitHub: [@HassanAhmadTijjani](https://github.com/HassanAhmadTijjani)
 
 ---

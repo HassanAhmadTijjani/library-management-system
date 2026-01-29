@@ -1,0 +1,48 @@
+﻿@model LibraryManagement.Models.BorrowRecord
+
+@{
+    ViewData["Title"] = "Delete Borrow Record";
+}
+<div class="px-3 py-2">
+<h1>Delete Borrow Record</h1>
+
+<h3 class="">Are you sure you want to delete this borrow record?</h3>
+</div>
+<div>
+    <hr />
+    <dl class="row px-3">
+        <dt class="col-6 col-6 col-sm-3">Book</dt>
+        <dd class="col-6 col-sm-9">@Model.Book?.Title</dd>
+
+        <dt class="col-6 col-sm-3">Member</dt>
+        <dd class="col-6 col-6 col-sm-9">@Model.Member?.Name</dd>
+
+        <dt class="col-6 col-sm-3">Borrow Date</dt>
+        <dd class="col-6 col-sm-9">@Model.BorrowDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-6 col-sm-3">Return Date</dt>
+        <dd class="col-6 col-sm-9">
+            @if (Model.ReturnDate == null)
+            {
+                <span class="badge bg-warning">Not Returned</span>
+            }
+            else
+            {
+                @Model.ReturnDate?.ToString("yyyy-MM-dd")
+            }
+        </dd>
+    </dl>
+    
+    @if (Model.ReturnDate == null)
+    {
+        <div class="alert alert-warning">
+            <strong>Warning:</strong> This book has not been returned yet. Deleting this record will mark the book as available again.
+        </div>
+    }
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

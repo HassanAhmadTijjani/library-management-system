@@ -1,0 +1,77 @@
+﻿@model IEnumerable<LibraryManagement.Models.Book>
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<div
+    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center p-3 mt-4 mb-4">
+    <div>
+        <h1 class="mb-3 mb-md-0">Books</h1>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create New Book
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Published Year</th>
+                <th>Available</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if(Model.Any()){
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Author</td>
+                    <td>@item.ISBN</td>
+                    <td>@item.PublishedYear</td>
+                    <td>
+                        @if (item.IsAvailable)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Borrowed</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column flex-md-row gap-2">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        } else {
+            <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-3">No books found. Create your first book!</p>
+            </td>
+        </tr>
+
+        }
+        </tbody>
+    </table>
+</div>

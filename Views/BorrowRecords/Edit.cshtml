@@ -1,0 +1,55 @@
+﻿@model LibraryManagement.Models.BorrowRecord
+
+@{
+    ViewData["Title"] = "Edit Borrow Record";
+}
+
+<h1>Edit Borrow Record</h1>
+
+<hr />
+<div class="row px-3">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="BookId" class="form-label">Book</label>
+                <select asp-for="BookId" class="form-select" asp-items="ViewBag.BookId" disabled>
+                </select>
+                <input type="hidden" asp-for="BookId" />
+                <small class="text-muted">Book cannot be changed after borrowing</small>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="MemberId" class="form-label">Member</label>
+                <select asp-for="MemberId" class="form-select" asp-items="ViewBag.MemberId" disabled>
+                </select>
+                <input type="hidden" asp-for="MemberId" />
+                <small class="text-muted">Member cannot be changed after borrowing</small>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="BorrowDate" class="form-label">Borrow Date</label>
+                <input asp-for="BorrowDate" class="form-control" type="date" />
+                <span asp-validation-for="BorrowDate" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="ReturnDate" class="form-label">Return Date</label>
+                <input asp-for="ReturnDate" class="form-control" type="date" />
+                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                <small class="text-muted">Set this date to mark the book as returned</small>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
