@@ -38,7 +38,7 @@ dotnet run
 
 Visit `https://localhost:5039` in your browser.
 
-## 📸 Screenshots
+
 
 ## 👨‍💻 Author
 
