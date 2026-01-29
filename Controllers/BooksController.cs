@@ -17,10 +17,15 @@ namespace LibraryManagement.Controllers
         // {
         //     return View();
         // }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var books = await _context.Books.ToListAsync();
-            return View(books);
+            var books = _context.Books.AsQueryable();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(p => p.Title.Contains(searchString) || p.Author.Contains(searchString));
+            }
+            ViewData["CurrentFilter"] = searchString;
+            return View(await books.ToListAsync());
         }
 
         // GET: Books/Details/Id
