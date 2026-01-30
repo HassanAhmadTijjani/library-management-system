@@ -39,115 +39,152 @@ namespace LibraryManagement.Controllers
         }
 
         // Get: Create/BorrowREcords
-        public IActionResult Create()
+        public async Task<IActionResult> Upsert(int? id)
         {
             ViewData["BookId"] = new SelectList(_context.Books.Where(p => p.IsAvailable), "Id", "Title");
             ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name");
-            return View();
+            if (id == null || id == 0)
+            {
+                return View(new BorrowRecord());
+            }
+            else
+            {
+                var borrowRecord = await _context.BorrowRecords.FindAsync(id);
+                if (borrowRecord == null)
+                {
+                    return NotFound();
+                }
+                return View(borrowRecord);
+            }
         }
 
-        // Post: BorrowRecords/Create
-        // POST: BorrowRecords/Create
+        // Post: BorrowRecords/Create/Upsert
+        // POST: BorrowRecords/Create/Upsert
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId,MemberId,BorrowDate")] BorrowRecord borrowRecord)
-        {
-            // TEMPORARY: Remove validation errors for navigation properties
-            ModelState.Remove("Book");
-            ModelState.Remove("Member");
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Upsert([Bind("Id,BookId,MemberId,BorrowDate,ReturnDate")] BorrowRecord borrowRecord)
+{
+    ModelState.Remove("Book");
+    ModelState.Remove("Member");
 
-            if (ModelState.IsValid)
+    if (ModelState.IsValid)
+    {
+        if (borrowRecord.Id == 0)
+        {
+            // Creating new borrow record
+            var book = await _context.Books.FindAsync(borrowRecord.BookId);
+            if (book != null)
             {
-                // Mark book as unavailable
+                book.IsAvailable = false;
+            }
+            
+            _context.Add(borrowRecord);
+            TempData["success"] = "Book borrowed successfully!";
+        }
+        else
+        {
+            // Updating existing record
+            var existingRecord = await _context.BorrowRecords
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.Id == borrowRecord.Id);
+            
+            // If return date is set and it was null before, mark book as available
+            if (borrowRecord.ReturnDate != null && existingRecord?.ReturnDate == null)
+            {
                 var book = await _context.Books.FindAsync(borrowRecord.BookId);
                 if (book != null)
                 {
-                    book.IsAvailable = false;
+                    book.IsAvailable = true;
                 }
-
-                _context.Add(borrowRecord);
-                await _context.SaveChangesAsync();
-                TempData["success"] = "Book borrowed successfully!";
-                return RedirectToAction(nameof(Index));
             }
-
-            ViewData["BookId"] = new SelectList(_context.Books.Where(b => b.IsAvailable), "Id", "Title", borrowRecord.BookId);
-            ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
-            return View(borrowRecord);
+            
+            _context.Update(borrowRecord);
+            TempData["success"] = "Borrow record updated successfully!";
         }
 
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    ViewData["BookId"] = new SelectList(_context.Books.Where(b => b.IsAvailable), "Id", "Title", borrowRecord.BookId);
+    ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
+    return View(borrowRecord);
+}
         // Get: BorrowRecord/Edit
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        // public async Task<IActionResult> Edit(int? id)
+        // {
+        //     if (id == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            var borrowRecord = await _context.BorrowRecords.FindAsync(id);
-            if (borrowRecord == null)
-            {
-                return NotFound();
-            }
+        //     var borrowRecord = await _context.BorrowRecords.FindAsync(id);
+        //     if (borrowRecord == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Title", borrowRecord.BookId);
-            ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
-            return View(borrowRecord);
-        }
+        //     ViewData["BookId"] = new SelectList(_context.Books, "Id", "Title", borrowRecord.BookId);
+        //     ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
+        //     return View(borrowRecord);
+        // }
 
         // Post: BorrowRecord/Edit
         // POST: BorrowRecords/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BookId,MemberId,BorrowDate,ReturnDate")] BorrowRecord borrowRecord)
-        {
-            if (id != borrowRecord.Id)
-            {
-                return NotFound();
-            }
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Edit(int id, [Bind("Id,BookId,MemberId,BorrowDate,ReturnDate")] BorrowRecord borrowRecord)
+        // {
+        //     if (id != borrowRecord.Id)
+        //     {
+        //         return NotFound();
+        //     }
 
-            // TEMPORARY: Remove validation errors for navigation properties
-            ModelState.Remove("Book");
-            ModelState.Remove("Member");
+        //     // TEMPORARY: Remove validation errors for navigation properties
+        //     ModelState.Remove("Book");
+        //     ModelState.Remove("Member");
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var existingRecord = await _context.BorrowRecords.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+        //     if (ModelState.IsValid)
+        //     {
+        //         try
+        //         {
+        //             var existingRecord = await _context.BorrowRecords.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
-                    // If return date is set and it was null before, mark book as available
-                    if (borrowRecord.ReturnDate != null && existingRecord?.ReturnDate == null)
-                    {
-                        var book = await _context.Books.FindAsync(borrowRecord.BookId);
-                        if (book != null)
-                        {
-                            book.IsAvailable = true;
-                        }
-                    }
+        //             // If return date is set and it was null before, mark book as available
+        //             if (borrowRecord.ReturnDate != null && existingRecord?.ReturnDate == null)
+        //             {
+        //                 var book = await _context.Books.FindAsync(borrowRecord.BookId);
+        //                 if (book != null)
+        //                 {
+        //                     book.IsAvailable = true;
+        //                 }
+        //             }
 
-                    _context.Update(borrowRecord);
-                    await _context.SaveChangesAsync();
-                    TempData["success"] = "Borrow record updated successfully!";
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BorrowRecordExists(borrowRecord.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+        //             _context.Update(borrowRecord);
+        //             await _context.SaveChangesAsync();
+        //             TempData["success"] = "Borrow record updated successfully!";
+        //         }
+        //         catch (DbUpdateConcurrencyException)
+        //         {
+        //             if (!BorrowRecordExists(borrowRecord.Id))
+        //             {
+        //                 return NotFound();
+        //             }
+        //             else
+        //             {
+        //                 throw;
+        //             }
+        //         }
+        //         return RedirectToAction(nameof(Index));
+        //     }
 
-            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Title", borrowRecord.BookId);
-            ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
-            return View(borrowRecord);
-        }
+        //     ViewData["BookId"] = new SelectList(_context.Books, "Id", "Title", borrowRecord.BookId);
+        //     ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
+        //     return View(borrowRecord);
+        // }
+
+
+
         // Get: Delete/BorrowRecord
         public async Task<IActionResult> Delete(int? id)
         {

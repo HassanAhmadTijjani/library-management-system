@@ -22,7 +22,8 @@ namespace LibraryManagement.Controllers
             var books = _context.Books.AsQueryable();
             if (!string.IsNullOrEmpty(searchString))
             {
-                books = books.Where(p => p.Title.Contains(searchString) || p.Author.Contains(searchString));
+                var toLower = searchString.ToLower();
+                books = books.Where(p => p.Title.ToLower().Contains(toLower) || p.Author.ToLower().Contains(toLower));
             }
             ViewData["CurrentFilter"] = searchString;
             return View(await books.ToListAsync());
@@ -43,73 +44,97 @@ namespace LibraryManagement.Controllers
             return View(book);
         }
 
-        // Get: Create/Books
-        public IActionResult Create()
+        // Get: Create/Books/Upsert
+        public async Task<IActionResult> Upsert(int? id)
         {
-            return View();
+            
+            if (id == null || id == 0)
+            {
+                return View(new Book());
+            }
+            else
+            {
+                var book = await _context.Books.FindAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                return View(book);
+            }
         }
 
-        // POST: Books/Create
+        // POST: Books/Create/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Author,ISBN,PublishedYear,IsAvailable")] Book book)
+        public async Task<IActionResult> Upsert([Bind("Id,Title,Author,ISBN,PublishedYear,IsAvailable")] Book book)
         {
+            if (book == null)
+            {
+                book = new Book();
+            }
+            
             if (ModelState.IsValid)
             {
-                _context.Add(book);
+                if (book.Id == 0)
+                {
+                    _context.Add(book);
+                    TempData["success"] = "Book added successfully!";
+                }
+                else
+                {
+                    _context.Update(book);
+                    TempData["success"] = "Book updated successfully!";
+                }
                 await _context.SaveChangesAsync();
-                TempData["success"] = "Book added successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
         }
 
         // Get: Books/Edit
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || id <= 0)
-            {
-                return NotFound();
-            }
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-            return View(book);
-        }
+        // public async Task<IActionResult> Edit(int? id)
+        // {
+        //     if (id == null || id <= 0)
+        //     {
+        //         return NotFound();
+        //     }
+        //     var book = await _context.Books.FindAsync(id);
+        //     if (book == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     return View(book);
+        // }
 
         // Post: Book/Edit
-        [HttpPost]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,ISBN,PublishedYear,IsAvailable")] Book book)
-        {
-            if (id != book.Id)
-            {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
-                TempData["success"] = "Book updated successfully!";
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(book.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(book);
-        }
+        // [HttpPost]
+        // public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,ISBN,PublishedYear,IsAvailable")] Book book)
+        // {
+        //     if (id != book.Id)
+        //     {
+        //         return NotFound();
+        //     }
+        //     if (ModelState.IsValid)
+        //     {
+        //         try
+        //         {
+        //             await _context.SaveChangesAsync();
+        //         }
+        //         catch (DbUpdateConcurrencyException)
+        //         {
+        //             if (!BookExists(book.Id))
+        //             {
+        //                 return NotFound();
+        //             }
+        //             else
+        //             {
+        //                 throw;
+        //             }
+        //         }
+        //         return RedirectToAction(nameof(Index));
+        //     }
+        //     return View(book);
+        // }
 
         // Get: Delete
         public async Task<IActionResult> Delete(int? id)

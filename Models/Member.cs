@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace LibraryManagement.Models;
 
@@ -14,6 +15,7 @@ public class Member
     public string Email { get; set; } = string.Empty;
     [DataType(DataType.Date)]
     public DateTime MemberShipDate { get; set; } = DateTime.Now;
-    public ICollection<BorrowRecord>? BorrowRecords { get; set; }
+    [ValidateNever]
+    public ICollection<BorrowRecord> BorrowRecords { get; set; } = null!;
 
 }

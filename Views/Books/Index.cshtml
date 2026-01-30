@@ -10,7 +10,7 @@
         <h1 class="mb-3 mb-md-0">Books</h1>
     </div>
     <div>
-        <a asp-action="Create" class="btn btn-primary">
+        <a asp-action="Upsert" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Create New Book
         </a>
     </div>
@@ -37,10 +37,10 @@
 {
     <div class="mb-3">
         <span class="text-muted">
-            Searching for: <strong>@ViewData["CurrentFilter"]</strong>
+            Search result for: <strong>@ViewData["CurrentFilter"]</strong>
         </span>
         <a asp-action="Index" class="btn btn-sm btn-outline-secondary ms-2">
-            Clear Search ye 
+            Clear Search
         </a>
     </div>
 }
@@ -79,7 +79,7 @@
                     </td>
                     <td>
                         <div class="d-flex flex-column flex-md-row gap-2">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                            <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">

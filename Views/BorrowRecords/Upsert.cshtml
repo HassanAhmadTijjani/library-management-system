@@ -1,16 +1,16 @@
 ﻿@model LibraryManagement.Models.BorrowRecord
 
 @{
-    ViewData["Title"] = "Borrow Book";
+    ViewData["Title"] = (Model?.Id ?? 0) == 0 ? "Borrow Book" : "Edit Borrow Record";
 }
 
-<h1>Borrow Book</h1>
-
+<h1>@ViewData["Title"]</h1>
 <hr />
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create">
+        <form asp-action="Upsert">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
             
             <div class="form-group mb-3">
                 <label asp-for="BookId" class="form-label">Select Book</label>
@@ -34,8 +34,23 @@
                 <span asp-validation-for="BorrowDate" class="text-danger"></span>
             </div>
             
+            @if ((Model?.Id ?? 0) != 0)
+{
+    <div class="form-group mb-3">
+        <label asp-for="ReturnDate" class="form-label">Return Date</label>
+        <input asp-for="ReturnDate" class="form-control" type="date" />
+        <span asp-validation-for="ReturnDate" class="text-danger"></span>
+        <small class="text-muted">Set this date to mark the book as returned</small>
+    </div>
+}
+
             <div class="form-group">
+            @if((Model?.Id ?? 0) == 0){
                 <input type="submit" value="Borrow Book" class="btn btn-primary" />
+            }else{
+                <input type="submit" value="Update Book" class="btn btn-primary" />
+
+            }
                 <a asp-action="Index" class="btn btn-secondary">Cancel</a>
                 @* <a asp-action="Index" class="btn btn-primary">Boorow Book</a> *@
             </div>
