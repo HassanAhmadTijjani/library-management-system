@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace LibraryManagement.Models;
 
@@ -17,6 +18,8 @@ public class Book
     [Range(1000, 2100)]
     public int PublishedYear { get; set; }
     public bool IsAvailable { get; set; } = true;
+    [ValidateNever]
+    public string ImageUrl { get; set; } = null!;
     public ICollection<BorrowRecord>? BorrowRecords{ get; set; }
 
 }

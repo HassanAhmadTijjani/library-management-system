@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using LibraryManagement.Data;
 using LibraryManagement.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +49,7 @@ namespace LibraryManagement.Controllers
         // Get: Create/Books/Upsert
         public async Task<IActionResult> Upsert(int? id)
         {
-            
+
             if (id == null || id == 0)
             {
                 return View(new Book());
@@ -66,31 +68,78 @@ namespace LibraryManagement.Controllers
         // POST: Books/Create/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert([Bind("Id,Title,Author,ISBN,PublishedYear,IsAvailable")] Book book)
+        public async Task<IActionResult> Upsert(Book book, IFormFile? imageFile)
         {
-            if (book == null)
-            {
-                book = new Book();
-            }
-            
             if (ModelState.IsValid)
             {
+                // Handle image upload
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    // Validate file size (2MB max)
+                    if (imageFile.Length > 2 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("imageFile", "Image size cannot exceed 2MB");
+                        return View(book);
+                    }
+
+                    // Validate file type
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                    var extension = Path.GetExtension(imageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(extension))
+                    {
+                        ModelState.AddModelError("imageFile", "Only JPG, PNG, and GIF images are allowed");
+                        return View(book);
+                    }
+
+                    // Delete old image if updating
+                    if (book.Id != 0 && !string.IsNullOrEmpty(book.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.ImageUrl);
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    // Generate unique filename
+                    var fileName = Guid.NewGuid().ToString() + extension;
+                    var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "books");
+
+                    // Ensure directory exists
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
+
+                    var filePath = Path.Combine(uploadPath, fileName);
+
+                    // Save file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    // Store relative path in database
+                    book.ImageUrl = Path.Combine("images", "books", fileName).Replace("\\", "/");
+                }
+
                 if (book.Id == 0)
                 {
                     _context.Add(book);
-                    TempData["success"] = "Book added successfully!";
+                    TempData["success"] = "Book created successfully!";
                 }
                 else
                 {
                     _context.Update(book);
                     TempData["success"] = "Book updated successfully!";
                 }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(book);
         }
-
         // Get: Books/Edit
         // public async Task<IActionResult> Edit(int? id)
         // {

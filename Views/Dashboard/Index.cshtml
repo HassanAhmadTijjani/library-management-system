@@ -84,6 +84,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+            <th>Cover</th>
                 <th>Book</th>
                 <th>Member</th>
                 <th>Date</th>
@@ -100,6 +101,20 @@
                 @foreach (var record in recentBorrows)
                 {
                     <tr>
+                        <td>
+                            @if (record.Book.ImageUrl == null || string.IsNullOrEmpty(record.Book.ImageUrl))
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center  "
+                                    style="width: 80px; height: 120px;">
+                                    <i class="bi bi-image" style="font-size: 2rem; color: #ccc;"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/@record.Book.ImageUrl" alt="Book Cover" class="img-thumbnail"
+                                    style="width: 100px; height: 160px; object-fit: cover;" />
+                            }
+                        </td>
                         <td>@record.Book?.Title</td>
                         <td>@record.Member?.Name</td>
                         <td>@record.BorrowDate.ToString("yyyy-MM-dd")</td>
