@@ -93,15 +93,15 @@
                         <td>
                             <div class="d-flex flex-column flex-md-row gap-2">
                             @if(User.IsInRole("Admin")){
-                                <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                                <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-sm btn-warning kard">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>
                             }
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info kard">
                                     <i class="bi bi-info-circle"></i> Details
                                 </a>
                                 @if(User.IsInRole("Admin")){
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger kard">
                                     <i class="bi bi-trash"></i> Delete
                                 </a>
                                 }
