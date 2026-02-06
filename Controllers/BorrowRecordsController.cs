@@ -1,5 +1,6 @@
 using LibraryManagement.Data;
 using LibraryManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,14 @@ namespace LibraryManagement.Controllers
         // {
         //     return View();
         // }
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var borrowRecords = await _context.BorrowRecords.Include(p => p.Book).Include(p => p.Member).ToListAsync();
             return View(borrowRecords);
         }
         // Get: BorrowRecords By ID
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,6 +42,7 @@ namespace LibraryManagement.Controllers
         }
 
         // Get: Create/BorrowREcords
+        [Authorize]
         public async Task<IActionResult> Upsert(int? id)
         {
             ViewData["BookId"] = new SelectList(_context.Books.Where(p => p.IsAvailable), "Id", "Title");
@@ -60,56 +64,57 @@ namespace LibraryManagement.Controllers
 
         // Post: BorrowRecords/Create/Upsert
         // POST: BorrowRecords/Create/Upsert
+        [Authorize]
         [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Upsert([Bind("Id,BookId,MemberId,BorrowDate,ReturnDate")] BorrowRecord borrowRecord)
-{
-    ModelState.Remove("Book");
-    ModelState.Remove("Member");
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert([Bind("Id,BookId,MemberId,BorrowDate,ReturnDate")] BorrowRecord borrowRecord)
+        {
+            ModelState.Remove("Book");
+            ModelState.Remove("Member");
 
-    if (ModelState.IsValid)
-    {
-        if (borrowRecord.Id == 0)
-        {
-            // Creating new borrow record
-            var book = await _context.Books.FindAsync(borrowRecord.BookId);
-            if (book != null)
+            if (ModelState.IsValid)
             {
-                book.IsAvailable = false;
-            }
-            
-            _context.Add(borrowRecord);
-            TempData["success"] = "Book borrowed successfully!";
-        }
-        else
-        {
-            // Updating existing record
-            var existingRecord = await _context.BorrowRecords
-                .AsNoTracking()
-                .FirstOrDefaultAsync(b => b.Id == borrowRecord.Id);
-            
-            // If return date is set and it was null before, mark book as available
-            if (borrowRecord.ReturnDate != null && existingRecord?.ReturnDate == null)
-            {
-                var book = await _context.Books.FindAsync(borrowRecord.BookId);
-                if (book != null)
+                if (borrowRecord.Id == 0)
                 {
-                    book.IsAvailable = true;
+                    // Creating new borrow record
+                    var book = await _context.Books.FindAsync(borrowRecord.BookId);
+                    if (book != null)
+                    {
+                        book.IsAvailable = false;
+                    }
+
+                    _context.Add(borrowRecord);
+                    TempData["success"] = "Book borrowed successfully!";
                 }
+                else
+                {
+                    // Updating existing record
+                    var existingRecord = await _context.BorrowRecords
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(b => b.Id == borrowRecord.Id);
+
+                    // If return date is set and it was null before, mark book as available
+                    if (borrowRecord.ReturnDate != null && existingRecord?.ReturnDate == null)
+                    {
+                        var book = await _context.Books.FindAsync(borrowRecord.BookId);
+                        if (book != null)
+                        {
+                            book.IsAvailable = true;
+                        }
+                    }
+
+                    _context.Update(borrowRecord);
+                    TempData["success"] = "Borrow record updated successfully!";
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            
-            _context.Update(borrowRecord);
-            TempData["success"] = "Borrow record updated successfully!";
+
+            ViewData["BookId"] = new SelectList(_context.Books.Where(b => b.IsAvailable), "Id", "Title", borrowRecord.BookId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
+            return View(borrowRecord);
         }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    ViewData["BookId"] = new SelectList(_context.Books.Where(b => b.IsAvailable), "Id", "Title", borrowRecord.BookId);
-    ViewData["MemberId"] = new SelectList(_context.Members, "Id", "Name", borrowRecord.MemberId);
-    return View(borrowRecord);
-}
         // Get: BorrowRecord/Edit
         // public async Task<IActionResult> Edit(int? id)
         // {
@@ -186,6 +191,8 @@ public async Task<IActionResult> Upsert([Bind("Id,BookId,MemberId,BorrowDate,Ret
 
 
         // Get: Delete/BorrowRecord
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -207,6 +214,8 @@ public async Task<IActionResult> Upsert([Bind("Id,BookId,MemberId,BorrowDate,Ret
         }
 
         // Post: Delete/BorrowRecord
+        [Authorize(Roles = "Admin")]
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

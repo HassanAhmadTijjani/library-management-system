@@ -15,62 +15,103 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-to">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
             <div class="container-fluid">
                 <!-- Brand/Logo -->
                 <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
-                    <i class="bi bi-book"></i> HAT Book Store
+                    <i class="bi bi-book"></i> Library Management
                 </a>
 
                 <!-- Toggle for mobile -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <!-- Menu Items -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <!-- Dashboard -->
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
 
-                        <!-- Books Dropdown -->
+                    <!-- Books Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-book"></i> Books
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="Books" asp-action="Index">
+                                    <i class="bi bi-list-ul"></i> All Books
+                                </a></li>
+                            <li><a class="dropdown-item" asp-controller="Books" asp-action="Upsert">
+                                    <i class="bi bi-plus-circle"></i> Add New
+                                </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Members Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-people"></i> Members
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="Members" asp-action="Index">
+                                    <i class="bi bi-list-ul"></i> All Members
+                                </a></li>
+                            <li><a class="dropdown-item" asp-controller="Members" asp-action="Upsert">
+                                    <i class="bi bi-person-plus"></i> Add New
+                                </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Borrow Records -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-controller="BorrowRecords" asp-action="Index">
+                            <i class="bi bi-arrow-left-right"></i> Records
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Right side - Login/Logout -->
+                <ul class="navbar-nav ms-auto">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <!-- Logged in - Show user name and logout -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-book"></i> Books
+                            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> @User.Identity.Name
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Books" asp-action="Index">All Books</a>
-                                </li>
-                                <li><a class="dropdown-item" asp-controller="Books" asp-action="Upsert">Add New Book</a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post"
+                                        class="dropdown-item p-0">
+                                        <button type="submit" class="btn btn-link dropdown-item">
+                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
-
-                        <!-- Members Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-people"></i> Members
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Members" asp-action="Index">All Members</a>
-                                </li>
-                                <li><a class="dropdown-item" asp-controller="Members" asp-action="Upsert">Add New
-                                        Member</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Borrow Records -->
+                    }
+                    else
+                    {
+                        <!-- Not logged in - Show login and register -->
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="BorrowRecords" asp-action="Index">
-                                <i class="bi bi-arrow-left-right"></i> Borrow Records
+                            <a class="nav-link text-white" asp-controller="Account" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
                             </a>
                         </li>
-                    </ul>
-                </div>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Account" asp-action="Register">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
             </div>
         </nav>
     </header>

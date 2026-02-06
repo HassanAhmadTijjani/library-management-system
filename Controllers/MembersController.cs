@@ -1,5 +1,6 @@
 using LibraryManagement.Data;
 using LibraryManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +18,10 @@ namespace LibraryManagement.Controllers
         // {
         //     return View();
         // }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string searchString)
         {
-            var members =  _context.Members.AsQueryable();
+            var members = _context.Members.AsQueryable();
             if (!string.IsNullOrEmpty(searchString))
             {
                 var toLower = searchString.ToLower();
@@ -31,6 +32,7 @@ namespace LibraryManagement.Controllers
         }
 
         // Get: Details/Read-One-OBJ
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,11 +48,12 @@ namespace LibraryManagement.Controllers
         }
 
         // Get: Create/Member/Upsert
+        [Authorize(Roles = "ADmin")]
         public async Task<IActionResult> Upsert(int? id)
         {
-            if(id == null || id == 0)
+            if (id == null || id == 0)
             {
-            return View(new Member());
+                return View(new Member());
             }
             else
             {
@@ -63,16 +66,17 @@ namespace LibraryManagement.Controllers
             }
         }
         // Post: Create/Member/Upsert
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert([Bind("Id,Name,Email,MemberShipDate")] Member member)
         {
             if (ModelState.IsValid)
             {
-                if(member.Id == 0)
+                if (member.Id == 0)
                 {
-                _context.Add(member);
-                TempData["success"] = "Member added successfully";
+                    _context.Add(member);
+                    TempData["success"] = "Member added successfully";
                 }
                 else
                 {
@@ -131,7 +135,8 @@ namespace LibraryManagement.Controllers
         // }
 
         // Get: Delete/Member
-         public async Task<IActionResult> Delete(int? id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -149,6 +154,9 @@ namespace LibraryManagement.Controllers
             return View(member);
         }
 
+        // Post: Delete/Member
+        [Authorize(Roles = "Admin")]
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -162,10 +170,10 @@ namespace LibraryManagement.Controllers
             TempData["success"] = "Member deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
-        
-         private bool MemberExists(int id)
+
+        private bool MemberExists(int id)
         {
             return _context.Members.Any(e => e.Id == id);
         }
-    } 
+    }
 }
