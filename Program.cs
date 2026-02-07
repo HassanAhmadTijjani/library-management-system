@@ -2,7 +2,6 @@ using LibraryManagement.Data;
 using LibraryManagement.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,11 +40,25 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 
 var app = builder.Build();
-// Seed roles and admin user
+// Auto-migrate database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await DbSeeder.SeedRolesAndAdminAsync(services);
+    
+    try
+    {
+        // Apply migrations (creates tables if they don't exist)
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+        
+        // Seed roles and admin user
+        await DbSeeder.SeedRolesAndAdminAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
 
 // Configure the HTTP request pipeline...
