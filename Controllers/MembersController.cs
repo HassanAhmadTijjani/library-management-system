@@ -48,7 +48,7 @@ namespace LibraryManagement.Controllers
         }
 
         // Get: Create/Member/Upsert
-        [Authorize(Roles = "ADmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Upsert(int? id)
         {
             if (id == null || id == 0)
